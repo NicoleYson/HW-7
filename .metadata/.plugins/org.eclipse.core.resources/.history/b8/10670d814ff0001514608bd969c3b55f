@@ -1,14 +1,12 @@
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
 
 //Group members: NICOLE YSON, MIKHAIL PRIGOZHIY, ...
 
 public class dns{ //it doesn't want me to name it dns-server
-	public static void main(String[] args)throws Exception{
-		//Command names + Command line processing
+	public static void main(String[] args){
+		//STEP 0: Command names + Command line processing
 			/*
 			 * FORMAT
 			 * (1) accept a port number with -p parameter
@@ -47,28 +45,5 @@ public class dns{ //it doesn't want me to name it dns-server
 			}
 		}
 		
-	//Simple server that receives a UDP packet on a port
-		DatagramSocket serverSocket = newDatagramSocket(); 
-			byte[] recieveData = new byte[1024]; 
-			byte sendData = new byte[1024];
-			while(true){
-				DatagramPacket recievePacket = newDatagramPacket(recieveData, recieveData.length);
-				serverSocket.recieve(recievePacket);
-				String sentence = new String(recievePacket.getData());
-				System.out.println("Recieved: " + sentence); 
-				InetAddress IPAddress = recievePacket.getAddress(); 
-				int port = recievePacket.getPort();
-				 
-			}
-	//Parse the DNS message
-		//Parse the DNS header
-			//Error check for network vs host byte order
-		// Parse out Query string
-	
-			
-	//Create a response
-			
-	//Process the Hosts file
-			
 	}
 }
