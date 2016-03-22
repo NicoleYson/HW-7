@@ -6,7 +6,7 @@ import java.net.DatagramSocket;
 
 //Group members: NICOLE YSON, MIKHAIL PRIGOZHIY, ...
 
-public class dns{ //it doesn't want me to name it dns-server
+public class dns_server{ //it doesn't want me to name it dns-server
 	public static void main(String[] args)throws Exception{
 		//Command names + Command line processing
 			/*
