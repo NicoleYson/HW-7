@@ -1,0 +1,23 @@
+Report
+Names of Group Members: 
+
+Instructions for Compiling:
+	(1) Navigate to the folder dns-server.java is located in using commandline or terminal:
+			cd (File Path)
+	(2) To compile, type the following in command line:
+			javac dns-server.java
+	(3) To execute type:
+			java dns-server [-p port#] [-f hostfile]
+							or
+			java dns-server [-f hostfile] [-p port#] 
+		Where the port number and the hostfile are provided by the user, 
+		but are both flagged by the options: -p and -f
+	(4) ...
+	
+Bugs or Peculiarities:
+	None to be noted
+
+Test case discussion:
+	To ensure that concurrency works, we ran the following:
+	
+	To ensure proper syntax is enforced, we ran the following:

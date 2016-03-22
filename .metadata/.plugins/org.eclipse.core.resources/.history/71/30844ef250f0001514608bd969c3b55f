@@ -1,0 +1,9 @@
+Report
+Names of Group Members: 
+
+Instructions for Compiling:
+	(1) Navigate to the folder dns-server.java is located in using commandline or terminal:
+			cd (File Path)
+	(2) To compile, type the following in command line:
+			javac dns-server.java
+	(3) To execute, 
