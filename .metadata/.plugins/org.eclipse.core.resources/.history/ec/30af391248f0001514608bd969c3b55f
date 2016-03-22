@@ -1,0 +1,13 @@
+//Group members: NICOLE YSON, MIKHAIL PRIGOZHIY, ...
+
+public class dns{ //it doesn't want me to name it dns-server
+	public static void main(String[] args){
+		//STEP 0: Command names + Command line processing
+			/*
+			 * FORMAT
+			 * (1) accept a port number with -p parameter
+			 * (2) accept hostfile with -f parameter
+			 */
+		
+	}
+}

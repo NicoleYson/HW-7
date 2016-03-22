@@ -1,0 +1,12 @@
+//Group members: NICOLE YSON, MIKHAIL PRIGOZHIY, ...
+
+public class dns{ //it doesn't want me to name it dns-server
+	public static void main(String[] args){
+		//STEP 0: Read a file of domain names and addresses
+			/*
+			 * FORMAT
+			 * (1) IP address at start of line 
+			 * (2) 
+			 */
+	}
+}

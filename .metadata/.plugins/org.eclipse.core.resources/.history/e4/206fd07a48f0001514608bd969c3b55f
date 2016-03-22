@@ -1,0 +1,56 @@
+//Group members: NICOLE YSON, MIKHAIL PRIGOZHIY, ...
+
+public class dns{ //it doesn't want me to name it dns-server
+	public static void main(String[] args){
+		//STEP 0: Command names + Command line processing
+			/*
+			 * FORMAT
+			 * (1) accept a port number with -p parameter
+			 * (2) accept hostfile with -f parameter
+			 */
+		if(args.length == 0)
+		{
+			System.out.println("error: _____");
+			System.exit(1);
+			return;
+		}
+		
+		if(args[0].equals("-p") && args.length > 1) 
+		{
+			hostName = args[1];
+			System.out.println("Got HOST = " + args[1]);
+			if(args[2].equals("-p") && args.length > 3)
+			{
+				servicePort = Integer.parseInt(args[3]);							
+				if(args.length > 4)
+				{
+					groupName = args[4];
+				}
+				else
+				{
+					System.out.println("error: invalid group name");
+					System.exit(1);
+					return;
+				}
+			}
+		
+		if(args[0].equals("-f") && args.length > 1) 
+		{
+			hostName = args[1];
+			System.out.println("Got HOST = " + args[1]);
+			if(args[2].equals("-p") && args.length > 3)
+			{
+				servicePort = Integer.parseInt(args[3]);							
+				if(args.length > 4)
+				{
+					groupName = args[4];
+				}
+				else
+				{
+					System.out.println("error: invalid group name");
+					System.exit(1);
+					return;
+				}
+			}
+	}
+}
