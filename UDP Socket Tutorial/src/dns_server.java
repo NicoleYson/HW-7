@@ -3,11 +3,15 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.InetAddress;
 
 //Group members: NICOLE YSON, MIKHAIL PRIGOZHIY, ...
 
+
 public class dns_server{ //it doesn't want me to name it dns-server
 	public static void main(String[] args)throws Exception{
+
+		
 		//Command names + Command line processing
 			/*
 			 * FORMAT
@@ -22,9 +26,17 @@ public class dns_server{ //it doesn't want me to name it dns-server
 				
 		if(args.length == 0) // error checking, can't be blank
 		{
-			System.out.println("error: invalid input");
+			port = 12345;
+			/*System.out.println("error: invalid input");
 			System.exit(1);
-			return;
+			return;*/
+		}
+		
+		/*
+		if(args[0].equals("-p") && (args.length == 2)) 
+		{
+			port = Integer.parseInt(args[1]);
+			System.out.println("Got PORT NUMBER = " + port);
 		}
 		
 		if(args[0].equals("-p") && (args.length == 4)) 
@@ -46,18 +58,19 @@ public class dns_server{ //it doesn't want me to name it dns-server
 				// hostFile = ;							
 			}
 		}
+		*/
 		
 	//Simple server that receives a UDP packet on a port
-		DatagramSocket serverSocket = newDatagramSocket(); 
+		DatagramSocket serverSocket = new DatagramSocket(); 
 			byte[] recieveData = new byte[1024]; 
-			byte sendData = new byte[1024];
+			byte[] sendData = new byte[1024];
 			while(true){
-				DatagramPacket recievePacket = newDatagramPacket(recieveData, recieveData.length);
-				serverSocket.recieve(recievePacket);
+				DatagramPacket recievePacket = new DatagramPacket(recieveData, recieveData.length);
+				serverSocket.receive(recievePacket);
 				String sentence = new String(recievePacket.getData());
 				System.out.println("Recieved: " + sentence); 
 				InetAddress IPAddress = recievePacket.getAddress(); 
-				int port = recievePacket.getPort();
+				int port1 = recievePacket.getPort();
 				 
 			}
 	//Parse the DNS message
