@@ -219,9 +219,18 @@ public class dns_server{ //it doesn't want me to name it dns-server
 		int short_value5 = ((pbuf[10] & 0xff) << 8) + (pbuf[11] & 0xff);
 		System.out.println("Request Name 16 bits = " + short_value5);
 		
+		int size = Integer.parseInt(String.format("%d" , pbuf[12]));
+		int start = 13;
+		int end = 0;
 		
-		System.out.print(String.format("%02x ", pbuf[12]));
-		System.out.print(String.format("%c ", pbuf[13]));
+		System.out.print(String.format("%d ", pbuf[13]));
+		
+		
+		for (int i = 0; i < size; i++){
+			System.out.print(String.format("%c", pbuf[start]));
+			start++;
+		}
+		
 		System.out.println("");
 		
 		// for example rd, recursion desired = bit 7
