@@ -131,7 +131,7 @@ public class dns_server{ //it doesn't want me to name it dns-server
 		int short_value = ((pbuf[0] & 0xff) << 8) + (pbuf[1] & 0xff);
 		System.out.println("first 16 bits = " + short_value);
 
-
+		System.out.println();
 		// demo of extracting bit fields (e.g., for dns)
 		// grab the second group of two bytes and treat it as a 16 bit set of bits
 		// bits are indexed left to right
