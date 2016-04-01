@@ -221,15 +221,33 @@ public class dns_server{ //it doesn't want me to name it dns-server
 		
 		int size = Integer.parseInt(String.format("%d" , pbuf[12]));
 		int start = 13;
-		int end = 0;
+		
 		
 		System.out.print(String.format("%d ", pbuf[13]));
+		int check = 0;
 		
+		do{
+			
+			if(check == 1){
+				System.out.print(".");
+			} else {
+				check = 1;
+			}
 		
 		for (int i = 0; i < size; i++){
 			System.out.print(String.format("%c", pbuf[start]));
 			start++;
 		}
+		
+		
+		size = Integer.parseInt(String.format("%d", pbuf[start]));
+		start++;
+		
+		} while(!((pbuf[start] <= ' ') || (pbuf[start] > '~')));
+		/*if ((pbuf[i] <= ' ') || (pbuf[i] > '~'))
+			System.out.print(String.format("%02x ", pbuf[i]));
+		else
+			System.out.print(String.format("%c  ", pbuf[i]));*/
 		
 		System.out.println("");
 		
