@@ -257,8 +257,36 @@ public class dns_server{ //it doesn't want me to name it dns-server
 
 		// example of setting a bit. Let's set qr to 1
 		v |= (1<<(15-0));
+		v |= (1<<(15-14));
+		v |= (1<<(15-15));
+		
+		for (int i=0; i < 16; i++) {
+			System.out.println("bit[" + i + "] = " + (v>>(15-i) & 1));
+			// System.out.println("bit[" + i + "] = " + (v & 1<<(15-i)));
+		}
+		
+		
+		rcode[0] = ((v >> 15-12) & 1);
+		rcode[1] = ((v >> 15-13) & 1);
+		rcode[2] = ((v >> 15-14) & 1);
+		rcode[3] = ((v >> 15-15) & 1);
+		
+		
+		rcodeVal = 0;
+		
+		for (int i = 3; i >= 0; i--){
+			if(rcode[i] == 1){
+				rcodeVal = (int) (rcodeVal + Math.pow(2, 3-i));
+			}
+		}
+		
+		System.out.println("new rcodeVal: " + rcodeVal);
+
+		
 		// write v back to the packet buffer
 		pbuf[2] = (byte) ((v >> 8) & 0xff);
 		pbuf[3] = (byte) (v & 0xff);
+		
+		
 	}
 }
