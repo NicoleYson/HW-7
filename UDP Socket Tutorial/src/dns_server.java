@@ -144,6 +144,26 @@ public class dns_server{ //it doesn't want me to name it dns-server
 		// for example qr, query/response = bit 0 
 		boolean qr = ((v >> 15-0) & 1) == 1;
 		System.out.println("qr = " + qr);
+		
+		//get opcode bits
+		int[] opcode = new int[3];
+		
+		opcode[0] = ((v >> 15-1) & 1);
+		opcode[1] = ((v >> 15-2) & 1);
+		opcode[2] = ((v >> 15-3) & 1);
+		opcode[3] = ((v >> 15-4) & 1);
+		
+		
+		int opcodeVal = 0;
+		
+		for (int i = 3; i >= 0; i--){
+			if(opcode[i] == 0){
+				opcodeVal = (int) (opcodeVal + Math.pow(2, 3-i));
+			}
+		}
+		
+		
+		System.out.println("Opcode value is: " + opcodeVal);
 
 		// for example rd, recursion desired = bit 7
 		boolean rd = ((v >> 15-7) & 1) == 1;
