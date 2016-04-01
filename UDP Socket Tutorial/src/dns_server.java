@@ -9,7 +9,7 @@ import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
-//Group members: NICOLE YSON, MIKHAIL PRIGOZHIY, ...
+//Group members: NICOLE YSON, MIKHAIL PRIGORCODEHIY, ...
 
 
 public class dns_server{ //it doesn't want me to name it dns-server
@@ -142,11 +142,11 @@ public class dns_server{ //it doesn't want me to name it dns-server
 		}
 
 		// for example qr, query/response = bit 0 
-		boolean qr = ((v >> 15-0) & 1) == 1;
+		int qr = ((v >> 15-0) & 1);
 		System.out.println("qr = " + qr);
 		
 		//get opcode bits
-		int[] opcode = new int[3];
+		int[] opcode = new int[4];
 		
 		opcode[0] = ((v >> 15-1) & 1);
 		opcode[1] = ((v >> 15-2) & 1);
@@ -157,7 +157,7 @@ public class dns_server{ //it doesn't want me to name it dns-server
 		int opcodeVal = 0;
 		
 		for (int i = 3; i >= 0; i--){
-			if(opcode[i] == 0){
+			if(opcode[i] == 1){
 				opcodeVal = (int) (opcodeVal + Math.pow(2, 3-i));
 			}
 		}
@@ -165,9 +165,68 @@ public class dns_server{ //it doesn't want me to name it dns-server
 		
 		System.out.println("Opcode value is: " + opcodeVal);
 
+		int AA = ((v >> 15-5) & 1);
+		int TC = ((v >> 15-6) & 1);
+		int RD = ((v >> 15-7) & 1);
+		int RA = ((v >> 15-8) & 1);
+		
+		int[] Z = new int[3];
+		
+		Z[0] = ((v >> 15-9) & 1);
+		Z[1] = ((v >> 15-10) & 1);
+		Z[2] = ((v >> 15-11) & 1);
+		
+		
+		int ZVal = 0;
+		
+		for (int i = 2; i >= 0; i--){
+			if(Z[i] == 1){
+				ZVal = (int) (ZVal + Math.pow(2, 2-i));
+			}
+		}
+		
+	int[] rcode = new int[4];
+		
+		rcode[0] = ((v >> 15-12) & 1);
+		rcode[1] = ((v >> 15-13) & 1);
+		rcode[2] = ((v >> 15-14) & 1);
+		rcode[3] = ((v >> 15-15) & 1);
+		
+		
+		int rcodeVal = 0;
+		
+		for (int i = 3; i >= 0; i--){
+			if(rcode[i] == 1){
+				rcodeVal = (int) (rcodeVal + Math.pow(2, 3-i));
+			}
+		}
+		
+		System.out.println("All Value: \nqr: " + qr + "\nOpcode: " + opcodeVal + "\nAA: " + AA 
+				+ "\nTC: " + TC + "\nRD: " + RD + "\nRA: " + RA + "\nZ: " + ZVal + "\nrcode: " + rcodeVal);
+		
+		int short_value1 = ((pbuf[4] & 0xff) << 8) + (pbuf[5] & 0xff);
+		System.out.println("QDCount 16 bits = " + short_value1);
+		
+		int short_value2 = ((pbuf[6] & 0xff) << 8) + (pbuf[7] & 0xff);
+		System.out.println("ANCount 16 bits = " + short_value2);
+		
+		int short_value3 = ((pbuf[8] & 0xff) << 8) + (pbuf[9] & 0xff);
+		System.out.println("NSCount 16 bits = " + short_value3);
+		
+		int short_value4 = ((pbuf[10] & 0xff) << 8) + (pbuf[11] & 0xff);
+		System.out.println("ARCount 16 bits = " + short_value4);
+		
+		int short_value5 = ((pbuf[10] & 0xff) << 8) + (pbuf[11] & 0xff);
+		System.out.println("Request Name 16 bits = " + short_value5);
+		
+		
+		System.out.print(String.format("%02x ", pbuf[12]));
+		System.out.print(String.format("%c ", pbuf[13]));
+		System.out.println("");
+		
 		// for example rd, recursion desired = bit 7
-		boolean rd = ((v >> 15-7) & 1) == 1;
-		System.out.println("rd = " + rd);
+		int rd = ((v >> 15-7) & 1);
+		//System.out.println("rd = " + rd);
 
 		// example of setting a bit. Let's set qr to 1
 		v |= (1<<(15-0));
