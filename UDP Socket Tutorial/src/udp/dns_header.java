@@ -1,4 +1,4 @@
-package sock;
+package udp;
 
 public class dns_header {
 
