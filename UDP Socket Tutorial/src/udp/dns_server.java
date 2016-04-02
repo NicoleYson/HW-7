@@ -11,7 +11,7 @@ import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
-//Group members: NICOLE YSON, MIKHAIL PRIGORCODEHIY, ...
+//Group members: MIKHAIL PRIGOZHIY, NICOLE YSON, JON GETAHUN, JONATHAN CAVERLY
 
 
 public class dns_server{ //it doesn't want me to name it dns-server
@@ -223,6 +223,7 @@ public class dns_server{ //it doesn't want me to name it dns-server
 		
 		int size = Integer.parseInt(String.format("%d" , pbuf[12]));
 		int start = 13;
+		int end;
 		
 		
 		System.out.print(String.format("%d ", pbuf[13]));
@@ -246,7 +247,7 @@ public class dns_server{ //it doesn't want me to name it dns-server
 		
 		
 		size = Integer.parseInt(String.format("%d", pbuf[start]));
-		start++;
+		end = start++;
 		
 		} while(!((pbuf[start] <= ' ') || (pbuf[start] > '~'))); //do a comparison to 0? maybe later.
 		System.out.println();
@@ -310,12 +311,20 @@ public class dns_server{ //it doesn't want me to name it dns-server
 			if(domainName.equalsIgnoreCase(name)){
 				System.out.println("The ip address: " + ip);
 				
-				int responseName = ((pbuf[start+4] & 0xff) << 8) + (pbuf[start+5] & 0xff);
+				
+				int l = 0;
+				for(int j = 12; j <= end; j++){
+					pbuf = shiftBytes(pbuf, l+start+4);
+					pbuf[start+4+l] = pbuf[j];
+					l++;
+				}
+				
+
 				//System.out.println("QClass Name 16 bits = " + short_value7);
 				//v |= (1<<(15-15)); set to 1
 				//v &= ~(1<<(15-7)); set to 0
 				
-				String[] BinaryIp = ipToBinary(ip);
+				/*String[] BinaryIp = ipToBinary(ip);
 				String firstHalf = BinaryIp[0].concat(BinaryIp[1]);
 				String secondHalf = BinaryIp[2].concat(BinaryIp[3]);
 				
@@ -343,15 +352,62 @@ public class dns_server{ //it doesn't want me to name it dns-server
 				pbuf[start+6] = (byte) ((v >> 8) & 0xff);
 				pbuf[start+7] = (byte) (v & 0xff);
 				
-				for (int j=0; i < 16; i++) {
-					System.out.println("bit[" + i + "] = " + (responseName>>(15-i) & 1));
+				for (int j=0; j < 16; j++) {
+					System.out.println("bit[" + j + "] = " + (responseName>>(15-j) & 1));
 					// System.out.println("bit[" + i + "] = " + (v & 1<<(15-i)));
 				}
 				
-				for (int j=0; i < 16; i++) {
-					System.out.println("bit[" + i + "] = " + (responseName2>>(15-i) & 1));
+				for (int j=0; j < 16; j++) {
+					System.out.println("bit[" + j + "] = " + (responseName2>>(15-j) & 1));
 					// System.out.println("bit[" + i + "] = " + (v & 1<<(15-i)));
 				}
+				
+				int Type = ((pbuf[start+8] & 0xff) << 8) + (pbuf[start+9] & 0xff);
+				
+				for(int j=0; j <16; j++){
+					if(j != 15){
+						Type &= ~(1<<(15-j));
+					} else {
+						Type |= (1<<(15-j));
+					}
+				}
+				
+				pbuf[start+8] = (byte) ((v >> 8) & 0xff);
+				pbuf[start+9] = (byte) (v & 0xff);
+				
+				int classy = ((pbuf[start+10] & 0xff) << 8) + (pbuf[start+11] & 0xff);
+				
+				for(int j=0; j <16; j++){
+					if(j != 15){
+						classy &= ~(1<<(15-j));
+					} else {
+						classy |= (1<<(15-j));
+					}
+				}
+				
+				pbuf[start+10] = (byte) ((v >> 8) & 0xff);
+				pbuf[start+11] = (byte) (v & 0xff);
+
+				int rdlength = ((pbuf[start+14] & 0xff) << 8) + (pbuf[start+15] & 0xff);
+				
+				for(int j=0; j <16; j++){
+					if(j != 13){
+						rdlength &= ~(1<<(15-j));
+					} else {
+						rdlength |= (1<<(15-j));
+					}
+				}
+				
+				pbuf[start+14] = (byte) ((v >> 8) & 0xff);
+				pbuf[start+15] = (byte) (v & 0xff);
+				*/
+				
+				for (int j=0; j < plen + 8; j++)
+					if ((pbuf[j] <= ' ') || (pbuf[j] > '~')){
+						System.out.print(String.format("%02x ", pbuf[j]));}
+					else{
+						System.out.print(String.format("%c  ", pbuf[j]));}
+				System.out.println("");
 				
 				break;
 			} 
@@ -399,5 +455,20 @@ public class dns_server{ //it doesn't want me to name it dns-server
 		}
 		
 		return target;
+	}
+	
+	public static byte[] shiftBytes(byte[] pbuf, int pos){
+		
+		byte[] pbuf2 = new byte[1024];
+		
+		for(int i = 0; i <= pos; i++){
+			pbuf2[i] = pbuf[i];
+		}
+		
+		for(int i = pos+1; i < pbuf.length; i++){
+			pbuf2[i] = pbuf[i-1];
+		}
+		
+		return pbuf2;
 	}
 }
