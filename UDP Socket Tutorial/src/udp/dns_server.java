@@ -71,13 +71,14 @@ public class dns_server{ //it doesn't want me to name it dns-server
 		System.out.println(serverSocket.getPort());
 		String Website;
 		
-			byte[] recieveData = new byte[1024]; 
-			byte[] sendData = new byte[1024];
+			byte[] recieveData = new byte[44]; 
+			byte[] sendData = new byte[44];
 			while(true){
 				DatagramPacket recievePacket = new DatagramPacket(recieveData, recieveData.length);
 				System.out.println("Waiting for packet.");
 				serverSocket.receive(recievePacket);
 				sendData = examine(recievePacket.getData(), recievePacket.getLength());
+				System.out.println(recievePacket.getData().length);
 				System.out.println("Packet received.");
 				String sentence = new String(Arrays.copyOfRange(recieveData, 13, 24), StandardCharsets.UTF_8);
 				//System.out.println("Recieved: " + sentence); 
@@ -86,7 +87,7 @@ public class dns_server{ //it doesn't want me to name it dns-server
 				InetAddress IPAddress = recievePacket.getAddress();
 				int port1 = recievePacket.getPort();
 				
-				DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length);
+				DatagramPacket sendPacket = new DatagramPacket(sendData, 44);
 				sendPacket.setPort(port1);
 				sendPacket.setAddress(IPAddress);
 				serverSocket.send(sendPacket);
