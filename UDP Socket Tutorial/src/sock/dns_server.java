@@ -257,8 +257,6 @@ public class dns_server{ //it doesn't want me to name it dns-server
 		int short_value7 = ((pbuf[start+2] & 0xff) << 8) + (pbuf[start+3] & 0xff);
 		System.out.println("QClass Name 16 bits = " + short_value7);
 		
-	
-		
 		
 		System.out.println("");
 		
@@ -270,6 +268,7 @@ public class dns_server{ //it doesn't want me to name it dns-server
 		v |= (1<<(15-0));
 		v |= (1<<(15-14));
 		v |= (1<<(15-15));
+		//v &= ~(1<<(15-7));
 		
 		for (int i=0; i < 16; i++) {
 			System.out.println("bit[" + i + "] = " + (v>>(15-i) & 1));
@@ -310,7 +309,50 @@ public class dns_server{ //it doesn't want me to name it dns-server
 			
 			if(domainName.equalsIgnoreCase(name)){
 				System.out.println("The ip address: " + ip);
-				ipToBinary(ip);
+				
+				int responseName = ((pbuf[start+4] & 0xff) << 8) + (pbuf[start+5] & 0xff);
+				//System.out.println("QClass Name 16 bits = " + short_value7);
+				//v |= (1<<(15-15)); set to 1
+				//v &= ~(1<<(15-7)); set to 0
+				
+				String[] BinaryIp = ipToBinary(ip);
+				String firstHalf = BinaryIp[0].concat(BinaryIp[1]);
+				String secondHalf = BinaryIp[2].concat(BinaryIp[3]);
+				
+				for(int j = 0; j < 16; j++){
+					if(firstHalf.charAt(j) == '1'){
+						responseName |= (1<<(15-j));
+					} else {
+						responseName &= ~(1<<(15-j));
+					}
+				}
+				
+				pbuf[start+4] = (byte) ((v >> 8) & 0xff);
+				pbuf[start+5] = (byte) (v & 0xff);
+				
+				int responseName2 = ((pbuf[start+6] & 0xff) << 8) + (pbuf[start+7] & 0xff);
+				
+				for(int j = 0; j < 16; j++){
+					if(secondHalf.charAt(j) == '1'){
+						responseName2 |= (1<<(15-j));
+					} else {
+						responseName2 &= ~(1<<(15-j));
+					}
+				}
+				
+				pbuf[start+6] = (byte) ((v >> 8) & 0xff);
+				pbuf[start+7] = (byte) (v & 0xff);
+				
+				for (int j=0; i < 16; i++) {
+					System.out.println("bit[" + i + "] = " + (responseName>>(15-i) & 1));
+					// System.out.println("bit[" + i + "] = " + (v & 1<<(15-i)));
+				}
+				
+				for (int j=0; i < 16; i++) {
+					System.out.println("bit[" + i + "] = " + (responseName2>>(15-i) & 1));
+					// System.out.println("bit[" + i + "] = " + (v & 1<<(15-i)));
+				}
+				
 				break;
 			} 
 		}
@@ -338,15 +380,24 @@ public class dns_server{ //it doesn't want me to name it dns-server
 		ip = ip.substring(ip.indexOf(".") + 1);
 		String fourthByte = ip;
 		
-		ipAddr[0] = Integer.toBinaryString(Integer.parseInt(firstByte));
-		ipAddr[1] = Integer.toBinaryString(Integer.parseInt(secondByte));
-		ipAddr[2] = Integer.toBinaryString(Integer.parseInt(thirdByte));
-		ipAddr[3] = Integer.toBinaryString(Integer.parseInt(fourthByte));
+		ipAddr[0] = padding(Integer.toBinaryString(Integer.parseInt(firstByte)));
+		ipAddr[1] = padding(Integer.toBinaryString(Integer.parseInt(secondByte)));
+		ipAddr[2] = padding(Integer.toBinaryString(Integer.parseInt(thirdByte)));
+		ipAddr[3] = padding(Integer.toBinaryString(Integer.parseInt(fourthByte)));
 		
 		
 		System.out.println(firstByte + "~~" + secondByte + "~~" + thirdByte + "~~" + fourthByte);
 		System.out.println(ipAddr[0] + "~~" + ipAddr[1] + "~~" + ipAddr[2] + "~~" + ipAddr[3]);
 		
 		return ipAddr;
+	}
+	
+	public static String padding(String target){
+		
+		while(target.length() != 8){
+			target = "0".concat(target);
+		}
+		
+		return target;
 	}
 }
