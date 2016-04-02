@@ -316,7 +316,10 @@ public class dns_server{ //it doesn't want me to name it dns-server
 				
 				
 				int l = 0;
-				for(int j = 12; j <= end; j++){
+				
+				
+				for(int j = 12; j < end; j++){
+
 					pbuf = shiftBytes(pbuf, l+start+4);
 					pbuf[start+4+l] = pbuf[j];
 					l++;
