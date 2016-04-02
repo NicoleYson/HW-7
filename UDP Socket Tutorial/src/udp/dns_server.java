@@ -226,8 +226,8 @@ public class dns_server{ //it doesn't want me to name it dns-server
 			}
 		}
 		
-	//	pbuf[2] = (byte) ((short_value2 >> 8) & 0xff);
-	//	pbuf[3] = (byte) (short_value2 & 0xff);
+		pbuf[6] = (byte) ((short_value2 >> 8) & 0xff);
+		pbuf[7] = (byte) (short_value2 & 0xff);
 		
 		int short_value3 = ((pbuf[8] & 0xff) << 8) + (pbuf[9] & 0xff);
 		System.out.println("NSCount 16 bits = " + short_value3);
@@ -365,8 +365,8 @@ public class dns_server{ //it doesn't want me to name it dns-server
 					}
 				}
 				
-				pbuf[curr] = (byte) ((v >> 8) & 0xff);
-				pbuf[curr+1] = (byte) (v & 0xff);
+				pbuf[curr] = (byte) ((Type >> 8) & 0xff);
+				pbuf[curr+1] = (byte) (Type & 0xff);
 				
 				curr+=2;
 				
@@ -380,10 +380,25 @@ public class dns_server{ //it doesn't want me to name it dns-server
 					}
 				}
 				
-				pbuf[curr] = (byte) ((v >> 8) & 0xff);
-				pbuf[curr+1] = (byte) (v & 0xff);
-
-				curr+=4;
+				pbuf[curr] = (byte) ((classy >> 8) & 0xff);
+				pbuf[curr+1] = (byte) (classy & 0xff);
+				
+				curr+=2;
+				
+			/*	int ttl = ((pbuf[curr] & 0xff) << 8) + (pbuf[curr+1] & 0xff);
+				
+				for(int j=0; j <16; j++){
+					if(j != 13){
+						ttl &= ~(1<<(15-j));
+					} else {
+						ttl |= (1<<(15-j));
+					}
+				}
+				
+				pbuf[curr] = (byte) ((ttl >> 8) & 0xff);
+				pbuf[curr+1] = (byte) (ttl & 0xff);*/
+				
+				curr+=6;
 				
 				int rdlength = ((pbuf[curr] & 0xff) << 8) + (pbuf[curr+1] & 0xff);
 				
@@ -395,12 +410,21 @@ public class dns_server{ //it doesn't want me to name it dns-server
 					}
 				}
 				
-				pbuf[curr] = (byte) ((v >> 8) & 0xff);
-				pbuf[curr+1] = (byte) (v & 0xff);
+				pbuf[curr] = (byte) ((rdlength >> 8) & 0xff);
+				pbuf[curr+1] = (byte) (rdlength & 0xff);
 		
 				String[] BinaryIp = ipToBinary(ip);
 				String firstHalf = BinaryIp[0].concat(BinaryIp[1]);
 				String secondHalf = BinaryIp[2].concat(BinaryIp[3]);
+				
+				int one = Integer.parseInt(ip.substring(0, ip.indexOf(".")));
+				ip = ip.substring(0, ip.indexOf(".") + 1);
+				int two = Integer.parseInt(ip.substring(0, ip.indexOf(".")));
+				ip = ip.substring(0, ip.indexOf(".") + 1);
+				int three = Integer.parseInt(ip.substring(0, ip.indexOf(".")));
+				ip = ip.substring(0, ip.indexOf(".") + 1);
+				int four = Integer.parseInt(ip.substring(0, ip.indexOf(".")));
+				
 				
 				curr+=2;
 				
@@ -418,9 +442,12 @@ public class dns_server{ //it doesn't want me to name it dns-server
 					}
 				}
 				
-				pbuf[curr] = (byte) ((responseName >> 8) & 0xff);
-				pbuf[curr+1] = (byte) (responseName & 0xff);
-				
+				//pbuf[curr] = (byte) ((responseName >> 8) & 0xff);
+				//pbuf[curr+1] = (byte) (responseName & 0xff);
+				pbuf[curr] = (byte) one;
+				pbuf[curr+1] = (byte) two;
+				pbuf[curr+2] = (byte) three;
+				pbuf[curr+3] = (byte) four;
 				
 				for(int j = 0; j < 16; j++){
 					if(secondHalf.charAt(j) == '1'){
@@ -430,8 +457,8 @@ public class dns_server{ //it doesn't want me to name it dns-server
 					}
 				}
 				
-				pbuf[curr+2] = (byte) ((responseName >> 8) & 0xff);
-				pbuf[curr+3] = (byte) (responseName & 0xff);
+		//		pbuf[curr+2] = (byte) ((responseName >> 8) & 0xff);
+			//	pbuf[curr+3] = (byte) (responseName & 0xff);
 				
 				for (int j=0; j < 16; j++) {
 					System.out.println("bit[" + j + "] = " + (responseName>>(15-j) & 1));
