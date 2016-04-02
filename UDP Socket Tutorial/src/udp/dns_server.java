@@ -311,12 +311,10 @@ public class dns_server{ //it doesn't want me to name it dns-server
 			if(domainName.equalsIgnoreCase(name)){
 				System.out.println("The ip address: " + ip);
 				
-				int l = 0;
 				
+				int l = 0;
 				for(int j = 12; j < end; j++){
-					if(j == 13){
-						pbuf = shiftBytes(pbuf, l+start+4);
-					}
+					pbuf = shiftBytes(pbuf, l+start+4);
 					pbuf[start+4+l] = pbuf[j];
 					l++;
 				}
