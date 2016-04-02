@@ -8,9 +8,11 @@ import java.util.StringTokenizer;
 
 public class parser {
 
-	public static String[] parse(File f) {
+	//public static String[] parse(File f) {
+	public static Domain[] parse(File f) {
 		
-		String[] strArray = null;
+		//String[] strArray = null;
+		Domain[] domArray = null;
 		
 		int errFlag = 0;
 		
@@ -24,9 +26,14 @@ public class parser {
 			
 			if (!input.ready()) {
 				input.close();
-				strArray = new String[1];
+				/*strArray = new String[1];
 				strArray[0] = "";
-				return strArray;
+				return strArray;*/
+				domArray = new Domain[1];
+				domArray[0] = new Domain("", "");
+				domArray[0].setAddress("err");
+				domArray[0].setHost("err");
+				return domArray;
 			}
 
 			while ((line = input.readLine()) != null) {
@@ -42,7 +49,8 @@ public class parser {
 		}
 		
 		if (lineCount != 0)
-			strArray = new String[lineCount];
+			domArray = new Domain[lineCount];
+			//strArray = new String[lineCount];
 		
 		try {
 
@@ -54,7 +62,7 @@ public class parser {
 					StringTokenizer st = new StringTokenizer(line);
 					String address = st.nextToken();
 					if (st.hasMoreTokens()) {
-						String name = st.nextToken();
+						String host = st.nextToken();
 						if (st.hasMoreTokens()) {
 							String comment  = st.nextToken();
 							if (comment.charAt(0) != '#') {
@@ -63,11 +71,17 @@ public class parser {
 								break;
 							}
 							else {
-								strArray[count] = address+" "+name;
+								domArray[count] = new Domain("", "");
+								domArray[count].setAddress(address);
+								domArray[count].setHost(host);
+								//strArray[count] = address+" "+host;
 							}
 						}
 						else {
-							strArray[count] = address+" "+name;
+							domArray[count] = new Domain("", "");
+							domArray[count].setAddress(address);
+							domArray[count].setHost(host);
+							//strArray[count] = address+" "+host;
 						}
 					}
 					else {
@@ -86,12 +100,18 @@ public class parser {
 		}
 
 		if (errFlag == 0) {
-			return strArray;
+			return domArray;
+			//return strArray;
 		}
 		else {
-			strArray = new String[1];
+			domArray = new Domain[1];
+			domArray[0] = new Domain("", "");
+			domArray[0].setAddress("err");
+			domArray[0].setHost("err");
+			return domArray;
+			/*strArray = new String[1];
 			strArray[0] = "";
-			return strArray;
+			return strArray;*/
 		}
 
 	}
