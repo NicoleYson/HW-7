@@ -311,10 +311,12 @@ public class dns_server{ //it doesn't want me to name it dns-server
 			if(domainName.equalsIgnoreCase(name)){
 				System.out.println("The ip address: " + ip);
 				
-				
 				int l = 0;
-				for(int j = 12; j <= end; j++){
-					pbuf = shiftBytes(pbuf, l+start+4);
+				
+				for(int j = 12; j < end; j++){
+					if(j == 13){
+						pbuf = shiftBytes(pbuf, l+start+4);
+					}
 					pbuf[start+4+l] = pbuf[j];
 					l++;
 				}
@@ -461,11 +463,11 @@ public class dns_server{ //it doesn't want me to name it dns-server
 		
 		byte[] pbuf2 = new byte[1024];
 		
-		for(int i = 0; i <= pos; i++){
+		for(int i = 0; i < pos; i++){
 			pbuf2[i] = pbuf[i];
 		}
 		
-		for(int i = pos+1; i < pbuf.length; i++){
+		for(int i = pos; i < pbuf.length; i++){
 			pbuf2[i] = pbuf[i-1];
 		}
 		
