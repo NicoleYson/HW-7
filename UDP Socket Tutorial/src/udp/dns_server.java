@@ -298,12 +298,15 @@ public class dns_server{ //it doesn't want me to name it dns-server
 		System.out.println("The domain name you are looking for is: " + domainName);
 		
 		File f = new File("hosts.txt");
-		String[] domains = parser.parse(f);
+		//String[] domains = parser.parse(f);
+		Domain[] domains  = parser.parse(f);
 		
 		for(int i = 0; i < domains.length; i++){
-			String curr = domains[i];
+			/*String curr = domains[i];
 			String ip = domains[i].substring(0, domains[i].indexOf(" ")).trim();
-			String name = domains[i].substring(domains[i].indexOf(" ")).trim();
+			String name = domains[i].substring(domains[i].indexOf(" ")).trim();*/
+			String ip = domains[i].getAddress();
+			String name = domains[i].getHost();
 			
 			System.out.println("ip: " + ip);
 			System.out.println("name: " + name);
