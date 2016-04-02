@@ -1,4 +1,6 @@
+package sock;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -225,16 +227,19 @@ public class dns_server{ //it doesn't want me to name it dns-server
 		
 		System.out.print(String.format("%d ", pbuf[13]));
 		int check = 0;
+		String domainName = "";
 		
 		do{
 			
 			if(check == 1){
+				domainName = domainName.concat(".");
 				System.out.print(".");
 			} else {
 				check = 1;
 			}
 		
 		for (int i = 0; i < size; i++){
+			domainName = domainName.concat(String.format("%c", pbuf[start]));
 			System.out.print(String.format("%c", pbuf[start]));
 			start++;
 		}
@@ -243,11 +248,17 @@ public class dns_server{ //it doesn't want me to name it dns-server
 		size = Integer.parseInt(String.format("%d", pbuf[start]));
 		start++;
 		
-		} while(!((pbuf[start] <= ' ') || (pbuf[start] > '~')));
-		/*if ((pbuf[i] <= ' ') || (pbuf[i] > '~'))
-			System.out.print(String.format("%02x ", pbuf[i]));
-		else
-			System.out.print(String.format("%c  ", pbuf[i]));*/
+		} while(!((pbuf[start] <= ' ') || (pbuf[start] > '~'))); //do a comparison to 0? maybe later.
+		System.out.println();
+		
+		int short_value6 = ((pbuf[start] & 0xff) << 8) + (pbuf[start+1] & 0xff);
+		System.out.println("QType Name 16 bits = " + short_value6);
+		
+		int short_value7 = ((pbuf[start+2] & 0xff) << 8) + (pbuf[start+3] & 0xff);
+		System.out.println("QClass Name 16 bits = " + short_value7);
+		
+	
+		
 		
 		System.out.println("");
 		
@@ -282,11 +293,60 @@ public class dns_server{ //it doesn't want me to name it dns-server
 		
 		System.out.println("new rcodeVal: " + rcodeVal);
 
+		System.out.println(start);
+		
+		System.out.println("The domain name you are looking for is: " + domainName);
+		
+		File f = new File("hosts.txt");
+		String[] domains = parser.parse(f);
+		
+		for(int i = 0; i < domains.length; i++){
+			String curr = domains[i];
+			String ip = domains[i].substring(0, domains[i].indexOf(" ")).trim();
+			String name = domains[i].substring(domains[i].indexOf(" ")).trim();
+			
+			System.out.println("ip: " + ip);
+			System.out.println("name: " + name);
+			
+			if(domainName.equalsIgnoreCase(name)){
+				System.out.println("The ip address: " + ip);
+				ipToBinary(ip);
+				break;
+			} 
+		}
+		
+	
+		
+		//System.out.println(domains[0]);
 		
 		// write v back to the packet buffer
 		pbuf[2] = (byte) ((v >> 8) & 0xff);
 		pbuf[3] = (byte) (v & 0xff);
 		
 		
+	}
+	
+	public static String[] ipToBinary(String ip){
+		
+		String[] ipAddr = new String[4];
+		
+		String firstByte = ip.substring(0, ip.indexOf("."));
+		ip = ip.substring(ip.indexOf(".") + 1);
+		String secondByte = ip.substring(0, ip.indexOf("."));
+		ip = ip.substring(ip.indexOf(".") + 1);
+		String thirdByte = ip.substring(0, ip.indexOf("."));
+		ip = ip.substring(ip.indexOf(".") + 1);
+		String fourthByte = ip;
+		
+		ipAddr[0] = Integer.toBinaryString(Integer.parseInt(firstByte));
+		ipAddr[1] = Integer.toBinaryString(Integer.parseInt(secondByte));
+		ipAddr[2] = Integer.toBinaryString(Integer.parseInt(thirdByte));
+		ipAddr[3] = Integer.toBinaryString(Integer.parseInt(fourthByte));
+		
+		
+		System.out.println(firstByte + "~~" + secondByte + "~~" + thirdByte + "~~" + fourthByte);
+		System.out.println(ipAddr[0] + "~~" + ipAddr[1] + "~~" + ipAddr[2] + "~~" + ipAddr[3]);
+		
+		return ipAddr;
 	}
 }
