@@ -14,7 +14,10 @@ import java.util.Arrays;
 //Group members: MIKHAIL PRIGOZHIY, NICOLE YSON, JON GETAHUN, JONATHAN CAVERLY
 
 
-public class dns_server{ //it doesn't want me to name it dns-server
+public class dns_server{ static //it doesn't want me to name it dns-server
+	
+	int responseSize;
+	
 	public static void main(String[] args)throws Exception{
 	
 		
@@ -87,7 +90,7 @@ public class dns_server{ //it doesn't want me to name it dns-server
 				InetAddress IPAddress = recievePacket.getAddress();
 				int port1 = recievePacket.getPort();
 				
-				DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length);
+				DatagramPacket sendPacket = new DatagramPacket(sendData, responseSize);
 				sendPacket.setPort(port1);
 				sendPacket.setAddress(IPAddress);
 				serverSocket.send(sendPacket);
@@ -163,6 +166,7 @@ public class dns_server{ //it doesn't want me to name it dns-server
 		opcode[3] = ((v >> 15-4) & 1);
 		
 		
+		//Convert the opcodeValue to decimal just for observational purposes
 		int opcodeVal = 0;
 		
 		for (int i = 3; i >= 0; i--){
@@ -270,6 +274,9 @@ public class dns_server{ //it doesn't want me to name it dns-server
 		} while(!((pbuf[start] <= ' ') || (pbuf[start] > '~'))); //do a comparison to 0? maybe later.
 		System.out.println();
 		
+		//Question section
+		
+		
 		int short_value6 = ((pbuf[start] & 0xff) << 8) + (pbuf[start+1] & 0xff);
 		System.out.println("QType Name 16 bits = " + short_value6);
 		
@@ -287,8 +294,19 @@ public class dns_server{ //it doesn't want me to name it dns-server
 		int short_value7 = ((pbuf[start+2] & 0xff) << 8) + (pbuf[start+3] & 0xff);
 		System.out.println("QClass Name 16 bits = " + short_value7);
 		
+		for(int j=0; j <16; j++){
+			if(j != 15){
+				short_value7 &= ~(1<<(15-j));
+			} else {
+				short_value7 |= (1<<(15-j));
+			}
+		}
 		
+		pbuf[start+2] = (byte) ((short_value6 >> 8) & 0xff);
+		pbuf[start+3] = (byte) (short_value6 & 0xff);
 		System.out.println("");
+		
+		responseSize = start + 4;
 		
 		// for example rd, recursion desired = bit 7
 		int rd = ((v >> 15-7) & 1);
@@ -297,6 +315,7 @@ public class dns_server{ //it doesn't want me to name it dns-server
 		// example of setting a bit. Let's set qr to 1
 		v |= (1<<(15-0));
 		v |= (1<<(15-5));
+		
 
 		v &= ~(1<<(15-7));
 		
@@ -333,39 +352,35 @@ public class dns_server{ //it doesn't want me to name it dns-server
 		File f = new File("hosts.txt");
 		//String[] domains = parser.parse(f);
 		Domain[] domains  = parser.parse(f);
-		
+		boolean domainExists = false;
+	
 		for(int i = 0; i < domains.length; i++){
-			/*String curr = domains[i];
-			String ip = domains[i].substring(0, domains[i].indexOf(" ")).trim();
-			String name = domains[i].substring(domains[i].indexOf(" ")).trim();*/
 			String ip = domains[i].getAddress();
 			String name = domains[i].getHost();
-			
-			System.out.println("ip: " + ip);
-			System.out.println("name: " + name);
-			
+
 			if(domainName.equalsIgnoreCase(name)){
+				domainExists = true;
 				System.out.println("The ip address: " + ip);
 				
+				//set rcode to 0
+				v &= ~(1<<(15-12)); 
+				v &= ~(1<<(15-13));
+				v &= (1<<(15-14));
+				v &= (1<<(15-15));
 				
+				pbuf[2] = (byte) ((v >> 8) & 0xff);
+				pbuf[3] = (byte) (v & 0xff);
+
 				int l = 0;
-				
-				
-				for(int j = 12; j < end; j++){
-					if(j < end - 1){
-						pbuf = shiftBytes(pbuf, l+start+4);
-					}
+							
+				//offset
+				for(int j = 12; j < end+1; j++){
 					pbuf[start+4+l] = pbuf[j];
 					l++;
 				}
 				
 				int curr = start + 4 + l;
-				
 
-				//System.out.println("QClass Name 16 bits = " + short_value7);
-				//v |= (1<<(15-15)); set to 1
-				//v &= ~(1<<(15-7)); set to 0
-				
 				
 				int Type = ((pbuf[curr] & 0xff) << 8) + (pbuf[curr+1] & 0xff);
 				
@@ -400,11 +415,7 @@ public class dns_server{ //it doesn't want me to name it dns-server
 				int ttl = ((pbuf[curr] & 0xff) << 8) + (pbuf[curr+1] & 0xff);
 				
 				for(int j=0; j <16; j++){
-					if(j != 15){
 						ttl &= ~(1<<(15-j));
-					} else {
-						ttl |= (1<<(15-j));
-					}
 				}
 				
 				pbuf[curr] = (byte) ((ttl >> 8) & 0xff);
@@ -425,9 +436,7 @@ public class dns_server{ //it doesn't want me to name it dns-server
 				pbuf[curr] = (byte) ((rdlength >> 8) & 0xff);
 				pbuf[curr+1] = (byte) (rdlength & 0xff);
 		
-				String[] BinaryIp = ipToBinary(ip);
-				String firstHalf = BinaryIp[0].concat(BinaryIp[1]);
-				String secondHalf = BinaryIp[2].concat(BinaryIp[3]);
+			
 				
 				int one = Integer.parseInt(ip.substring(0, ip.indexOf(".")));
 				ip = ip.substring(ip.indexOf(".") + 1);
@@ -447,13 +456,6 @@ public class dns_server{ //it doesn't want me to name it dns-server
 				int responseName2 = ((pbuf[curr+2] & 0xff) << 8) + (pbuf[curr+3] & 0xff);				
 				
 				
-				for(int j = 0; j < 16; j++){
-					if(firstHalf.charAt(j) == '1'){
-						responseName |= (1<<(15-j));
-					} else {
-						responseName &= ~(1<<(15-j));
-					}
-				}
 				
 				//pbuf[curr] = (byte) ((responseName >> 8) & 0xff);
 				//pbuf[curr+1] = (byte) (responseName & 0xff);
@@ -462,14 +464,9 @@ public class dns_server{ //it doesn't want me to name it dns-server
 				pbuf[curr+1] = (byte) two;
 				pbuf[curr+2] = (byte) three;
 				pbuf[curr+3] = (byte) four;
+				responseSize = curr+4;
 				
-				for(int j = 0; j < 16; j++){
-					if(secondHalf.charAt(j) == '1'){
-						responseName2 |= (1<<(15-j));
-					} else {
-						responseName2 &= ~(1<<(15-j));
-					}
-				}
+			
 				
 				//pbuf[curr+2] = (byte) ((responseName >> 8) & 0xff);
 				//pbuf[curr+3] = (byte) (responseName & 0xff);
@@ -487,11 +484,11 @@ public class dns_server{ //it doesn't want me to name it dns-server
 		
 				
 				
-				for (int j=0; j <= curr+3; j++)
+				for (int j=0; j <= 47; j++)
 						System.out.print(String.format("%02x ", pbuf[j]));
 				System.out.println("");
 				
-				for (int j=0; j <= curr+3; j++)
+				for (int j=0; j <= 47; j++)
 					if ((pbuf[j] <= ' ') || (pbuf[j] > '~')){
 						System.out.print(String.format("%02x ", pbuf[j]));}
 					else{
@@ -499,65 +496,44 @@ public class dns_server{ //it doesn't want me to name it dns-server
 				System.out.println("");
 				
 				break;
-			} 
+				
+			} 			
+			
 		}
+
 		
+		if(!domainExists) {
+			//Set rcode to 3 for error (address not found)
+			v &= ~(1<<(15-12)); 
+			v &= ~(1<<(15-13));
+			v |= (1<<(15-14));
+			v |= (1<<(15-15));
+			
+			for (int x=0; x < 16; x++) {
+				System.out.println("bit[" + x + "] = " + (v>>(15-x) & 1));
+				// System.out.println("bit[" + i + "] = " + (v & 1<<(15-i)));
+			}
+			
+			pbuf[2] = (byte) ((v >> 8) & 0xff);
+			pbuf[3] = (byte) (v & 0xff);
 	
-		
-		//System.out.println(domains[0]);
-		
-		// write v back to the packet buffer
+		//set ANCount to 0
+			
+			int ANCount = ((pbuf[6] & 0xff) << 8) + (pbuf[7] & 0xff);
+			System.out.println("ANCount 16 bits = " + short_value2);
+			
+			for(int j=0; j <16; j++){
+					short_value2 &= ~(1<<(15-j));
+			}
+			
+			pbuf[6] = (byte) ((short_value2 >> 8) & 0xff);
+			pbuf[7] = (byte) (short_value2 & 0xff);
+			
+		}
+
 	
 		
 		return pbuf;
 		
-	}
-	
-	public static String[] ipToBinary(String ip){
-		
-		String[] ipAddr = new String[4];
-		
-		String firstByte = ip.substring(0, ip.indexOf("."));
-		ip = ip.substring(ip.indexOf(".") + 1);
-		String secondByte = ip.substring(0, ip.indexOf("."));
-		ip = ip.substring(ip.indexOf(".") + 1);
-		String thirdByte = ip.substring(0, ip.indexOf("."));
-		ip = ip.substring(ip.indexOf(".") + 1);
-		String fourthByte = ip;
-		
-		ipAddr[0] = padding(Integer.toBinaryString(Integer.parseInt(firstByte)));
-		ipAddr[1] = padding(Integer.toBinaryString(Integer.parseInt(secondByte)));
-		ipAddr[2] = padding(Integer.toBinaryString(Integer.parseInt(thirdByte)));
-		ipAddr[3] = padding(Integer.toBinaryString(Integer.parseInt(fourthByte)));
-		
-		
-		System.out.println(firstByte + "~~" + secondByte + "~~" + thirdByte + "~~" + fourthByte);
-		System.out.println(ipAddr[0] + "~~" + ipAddr[1] + "~~" + ipAddr[2] + "~~" + ipAddr[3]);
-		
-		return ipAddr;
-	}
-	
-	public static String padding(String target){
-		
-		while(target.length() != 8){
-			target = "0".concat(target);
-		}
-		
-		return target;
-	}
-	
-	public static byte[] shiftBytes(byte[] pbuf, int pos){
-		
-		byte[] pbuf2 = new byte[1024];
-		
-		for(int i = 0; i <= pos; i++){
-			pbuf2[i] = pbuf[i];
-		}
-		
-		for(int i = pos+1; i < pbuf.length; i++){
-			pbuf2[i] = pbuf[i-1];
-		}
-		
-		return pbuf2;
 	}
 }
