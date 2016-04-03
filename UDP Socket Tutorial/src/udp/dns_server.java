@@ -64,6 +64,9 @@ public static void main(String[] args)throws Exception{
 	//Simple server that receives a UDP packet on a port
 	DatagramSocket serverSocket = new DatagramSocket(port);
 	String Website;
+	
+	System.out.println("Port set to: " + port);
+	System.out.println("Host file set to: " + hostFile + "\n");
 
 	byte[] recieveData = new byte[1024]; 
 	byte[] sendData = new byte[1024];
@@ -71,8 +74,8 @@ public static void main(String[] args)throws Exception{
 		DatagramPacket recievePacket = new DatagramPacket(recieveData, recieveData.length);
 		System.out.println("Waiting for packet.");
 		serverSocket.receive(recievePacket);
-		sendData = examine(recievePacket.getData(), recievePacket.getLength());
 		System.out.println("Packet received.");
+		sendData = examine(recievePacket.getData(), recievePacket.getLength());
 		String sentence = new String(Arrays.copyOfRange(recieveData, 13, 24), StandardCharsets.UTF_8);
 		//System.out.println("Recieved: " + sentence); 
 		//Website = Arrays.copyOfRange(recieveData, 12, 16);
@@ -84,6 +87,7 @@ public static void main(String[] args)throws Exception{
 		sendPacket.setPort(port1);
 		sendPacket.setAddress(IPAddress);
 		serverSocket.send(sendPacket);
+		System.out.println("Response sent.\n");
 
 	}
 	//Parse the DNS message
@@ -197,6 +201,7 @@ static byte[] examine(byte[] pbuf, int plen) {
 		String name = domains[i].getHost();
 
 		if(domainName.equalsIgnoreCase(name)){
+			System.out.println("The queried website is \""+ name + "\" which has an ip of \"" + ip + "\"");
 			domainExists = true;
 			//set qr to 1
 			v |= (1<<(15-0));
@@ -318,7 +323,8 @@ static byte[] examine(byte[] pbuf, int plen) {
 	}
 
 	if(domainExists == false) {
-
+		
+		System.out.println("The queried website does not exist.");
 		//set qr to 1
 		v |= (1<<(15-0));
 		//set aa to 1
