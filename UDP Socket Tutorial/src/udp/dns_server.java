@@ -41,14 +41,14 @@ public class dns_server{ static //it doesn't want me to name it dns-server
 			return;*/
 		}
 		
-		/*
-		if(args[0].equals("-p") && (args.length == 2)) 
+		
+		if( (args.length == 2) && args[0].equals("-p")) 
 		{
 			port = Integer.parseInt(args[1]);
 			System.out.println("Got PORT NUMBER = " + port);
 		}
 		
-		if(args[0].equals("-p") && (args.length == 4)) 
+		if((args.length == 4) && args[0].equals("-p")) 
 		{
 			port = Integer.parseInt(args[1]);
 			System.out.println("Got PORT NUMBER = " + port);
@@ -58,7 +58,7 @@ public class dns_server{ static //it doesn't want me to name it dns-server
 			}
 		}
 		
-		if(args[0].equals("-f") && (args.length == 4)) 
+		if((args.length == 4) && args[0].equals("-f")) 
 		{
 			System.out.println("Got HOST FILE = "  ); //add variable for txt file here
 			if(args[2].equals("-p") && args.length > 3)
@@ -67,7 +67,7 @@ public class dns_server{ static //it doesn't want me to name it dns-server
 				// hostFile = ;							
 			}
 		}
-		*/
+		
 		
 	//Simple server that receives a UDP packet on a port
 		DatagramSocket serverSocket = new DatagramSocket(port);
@@ -408,37 +408,5 @@ public class dns_server{ static //it doesn't want me to name it dns-server
 		
 	}
 	
-	public static String[] ipToBinary(String ip){
-		
-		String[] ipAddr = new String[4];
-		
-		String firstByte = ip.substring(0, ip.indexOf("."));
-		ip = ip.substring(ip.indexOf(".") + 1);
-		String secondByte = ip.substring(0, ip.indexOf("."));
-		ip = ip.substring(ip.indexOf(".") + 1);
-		String thirdByte = ip.substring(0, ip.indexOf("."));
-		ip = ip.substring(ip.indexOf(".") + 1);
-		String fourthByte = ip;
-		
-		ipAddr[0] = padding(Integer.toBinaryString(Integer.parseInt(firstByte)));
-		ipAddr[1] = padding(Integer.toBinaryString(Integer.parseInt(secondByte)));
-		ipAddr[2] = padding(Integer.toBinaryString(Integer.parseInt(thirdByte)));
-		ipAddr[3] = padding(Integer.toBinaryString(Integer.parseInt(fourthByte)));
-		
-		
-		System.out.println(firstByte + "~~" + secondByte + "~~" + thirdByte + "~~" + fourthByte);
-		System.out.println(ipAddr[0] + "~~" + ipAddr[1] + "~~" + ipAddr[2] + "~~" + ipAddr[3]);
-		
-		return ipAddr;
-	}
-	
-	public static String padding(String target){
-		
-		while(target.length() != 8){
-			target = "0".concat(target);
-		}
-		
-		return target;
-	}
 	
 }
