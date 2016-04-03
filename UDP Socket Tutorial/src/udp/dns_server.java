@@ -229,8 +229,12 @@ public class dns_server{ static //it doesn't want me to name it dns-server
 				v |= (1<<(15-0));
 				//set aa to 1
 				v |= (1<<(15-5));
+				//set tc to 0
+				v &= ~(1<<(15-6));
+				//set ra to 0
+				v &= ~(1<<(15-5));
 				//set rd to 0
-			//	v &= ~(1<<(15-7));
+				v &= ~(1<<(15-7));
 				
 				//Set rcode to 3 for error (address not found)
 				v &= ~(1<<(15-12)); 
@@ -360,12 +364,17 @@ public class dns_server{ static //it doesn't want me to name it dns-server
 		}
 		
 		if(domainExists == false) {
+			
 			//set qr to 1
 			v |= (1<<(15-0));
 			//set aa to 1
 			v |= (1<<(15-5));
+			//set tc to 0
+			v &= ~(1<<(15-6));
+			//set ra to 0
+			v &= ~(1<<(15-5));
 			//set rd to 0
-			//v &= ~(1<<(15-7));
+			v &= ~(1<<(15-7));
 			
 			//Set rcode to 3 for error (address not found)
 			v &= ~(1<<(15-12)); 
