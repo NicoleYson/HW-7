@@ -232,7 +232,7 @@ public class dns_server{ static //it doesn't want me to name it dns-server
 				//set tc to 0
 				v &= ~(1<<(15-6));
 				//set ra to 0
-				v &= ~(1<<(15-5));
+				v &= ~(1<<(15-8));
 				//set rd to 0
 				v &= ~(1<<(15-7));
 				
@@ -372,7 +372,7 @@ public class dns_server{ static //it doesn't want me to name it dns-server
 			//set tc to 0
 			v &= ~(1<<(15-6));
 			//set ra to 0
-			v &= ~(1<<(15-5));
+			v &= ~(1<<(15-8));
 			//set rd to 0
 			v &= ~(1<<(15-7));
 			
