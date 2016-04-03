@@ -31,11 +31,13 @@ public class dns_server{
 				hostFile = "hosts.txt"; //file that stores hosts
 			} else if( (args.length == 2) && args[0].equals("-p")) { //Port number occurs first
 				port = Integer.parseInt(args[1]);
+				hostFile = "hosts.txt"; //file that stores hosts
 				System.out.println("Got PORT NUMBER = " + port);
-			} else if(args.length == 2 && args[0].equals("-f")){ //Host name occurs first
+			} else if(args.length == 2 && args[0].equals("-f")){ //Host file occurs first
 				port = 42069; //Port number absent, set to default port number
-				hostFile = args[0];
+				hostFile = args[1];
 			} else if((args.length == 4) && args[0].equals("-p") && args[2].equals("-f")){
+				//All inputs present, port number occurs first, followed by host file
 				port = Integer.parseInt(args[1]);
 				hostFile = args[3];
 				System.out.println("Got PORT NUMBER = " + port);
@@ -307,7 +309,7 @@ public class dns_server{
 
 			if(domainExists == false) {
 
-				System.out.println("The queried website does not exist.");
+				System.out.println("The queried website\""+ domainName + "\"  does not exist.");
 				//set qr to 1
 				v |= (1<<(15-0));
 				//set aa to 1
@@ -339,7 +341,7 @@ public class dns_server{
 				pbuf[7] = (byte) (ANCount & 0xff);
 
 			} } else {
-				System.out.println("The queried website does not exist.");
+				System.out.println("The queried website\""+ domainName + "\"  does not exist.");
 				//set qr to 1
 				v |= (1<<(15-0));
 				//set aa to 1
