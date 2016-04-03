@@ -389,6 +389,7 @@ static byte[] examine(byte[] pbuf, int plen) {
 
 		//set ANCount to 0
 
+		
 		int ANCount = ((pbuf[6] & 0xff) << 8) + (pbuf[7] & 0xff);
 		System.out.println("ANCount 16 bits = " + ANCount);
 
