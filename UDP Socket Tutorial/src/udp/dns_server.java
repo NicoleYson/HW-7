@@ -147,102 +147,8 @@ public class dns_server{ static //it doesn't want me to name it dns-server
 		// grab the second group of two bytes and treat it as a 16 bit set of bits
 		// bits are indexed left to right
 		int v = (pbuf[2] & 0xff) << 8 | (pbuf[3] & 0xff);
-		for (int i=0; i < 16; i++) {
-			System.out.println("bit[" + i + "] = " + (v>>(15-i) & 1));
-			// System.out.println("bit[" + i + "] = " + (v & 1<<(15-i)));
-		}
-
-		// for example qr, query/response = bit 0 
-		int qr = ((v >> 15-0) & 1);
 		
-		System.out.println("qr = " + qr);
-		
-		//get opcode bits
-		int[] opcode = new int[4];
-		
-		opcode[0] = ((v >> 15-1) & 1);
-		opcode[1] = ((v >> 15-2) & 1);
-		opcode[2] = ((v >> 15-3) & 1);
-		opcode[3] = ((v >> 15-4) & 1);
-		
-		
-		//Convert the opcodeValue to decimal just for observational purposes
-		int opcodeVal = 0;
-		
-		for (int i = 3; i >= 0; i--){
-			if(opcode[i] == 1){
-				opcodeVal = (int) (opcodeVal + Math.pow(2, 3-i));
-			}
-		}
-		
-		
-		System.out.println("Opcode value is: " + opcodeVal);
-
-		int AA = ((v >> 15-5) & 1);
-		int TC = ((v >> 15-6) & 1);
-		int RD = ((v >> 15-7) & 1);
-		int RA = ((v >> 15-8) & 1);
-		
-		int[] Z = new int[3];
-		
-		Z[0] = ((v >> 15-9) & 1);
-		Z[1] = ((v >> 15-10) & 1);
-		Z[2] = ((v >> 15-11) & 1);
-		
-		
-		int ZVal = 0;
-		
-		for (int i = 2; i >= 0; i--){
-			if(Z[i] == 1){
-				ZVal = (int) (ZVal + Math.pow(2, 2-i));
-			}
-		}
-		
-	int[] rcode = new int[4];
-		
-		rcode[0] = ((v >> 15-12) & 1);
-		rcode[1] = ((v >> 15-13) & 1);
-		rcode[2] = ((v >> 15-14) & 1);
-		rcode[3] = ((v >> 15-15) & 1);
-		
-		
-		int rcodeVal = 0;
-		
-		for (int i = 3; i >= 0; i--){
-			if(rcode[i] == 1){
-				rcodeVal = (int) (rcodeVal + Math.pow(2, 3-i));
-			}
-		}
-		
-		System.out.println("All Value: \nqr: " + qr + "\nOpcode: " + opcodeVal + "\nAA: " + AA 
-				+ "\nTC: " + TC + "\nRD: " + RD + "\nRA: " + RA + "\nZ: " + ZVal + "\nrcode: " + rcodeVal);
-		
-		int short_value1 = ((pbuf[4] & 0xff) << 8) + (pbuf[5] & 0xff);
-		System.out.println("QDCount 16 bits = " + short_value1);
-		
-		int short_value2 = ((pbuf[6] & 0xff) << 8) + (pbuf[7] & 0xff);
-		System.out.println("ANCount 16 bits = " + short_value2);
-		
-		for(int j=0; j <16; j++){
-			if(j != 15){
-				short_value2 &= ~(1<<(15-j));
-			} else {
-				short_value2 |= (1<<(15-j));
-			}
-		}
-		
-		pbuf[6] = (byte) ((short_value2 >> 8) & 0xff);
-		pbuf[7] = (byte) (short_value2 & 0xff);
-		
-		int short_value3 = ((pbuf[8] & 0xff) << 8) + (pbuf[9] & 0xff);
-		System.out.println("NSCount 16 bits = " + short_value3);
-		
-		int short_value4 = ((pbuf[10] & 0xff) << 8) + (pbuf[11] & 0xff);
-		System.out.println("ARCount 16 bits = " + short_value4);
-		
-		int short_value5 = ((pbuf[10] & 0xff) << 8) + (pbuf[11] & 0xff);
-		System.out.println("Request Name 16 bits = " + short_value5);
-		
+		//Query String begins on index 12 (Index 12 is the byte count, whereas 13 is the start of the String)
 		int size = Integer.parseInt(String.format("%d" , pbuf[12]));
 		int start = 13;
 		int end;
@@ -274,102 +180,84 @@ public class dns_server{ static //it doesn't want me to name it dns-server
 		} while(!((pbuf[start] <= ' ') || (pbuf[start] > '~'))); //do a comparison to 0? maybe later.
 		System.out.println();
 		
-		//Question section
+		//Question Type
 		
 		
-		int short_value6 = ((pbuf[start] & 0xff) << 8) + (pbuf[start+1] & 0xff);
-		System.out.println("QType Name 16 bits = " + short_value6);
-		
-		for(int j=0; j <16; j++){
-			if(j != 15){
-				short_value6 &= ~(1<<(15-j));
-			} else {
-				short_value6 |= (1<<(15-j));
-			}
-		}
-		
-		pbuf[start] = (byte) ((short_value6 >> 8) & 0xff);
-		pbuf[start+1] = (byte) (short_value6 & 0xff);
-		
-		int short_value7 = ((pbuf[start+2] & 0xff) << 8) + (pbuf[start+3] & 0xff);
-		System.out.println("QClass Name 16 bits = " + short_value7);
+		int QType = ((pbuf[start] & 0xff) << 8) + (pbuf[start+1] & 0xff);
 		
 		for(int j=0; j <16; j++){
 			if(j != 15){
-				short_value7 &= ~(1<<(15-j));
+				QType &= ~(1<<(15-j));
 			} else {
-				short_value7 |= (1<<(15-j));
+				QType |= (1<<(15-j));
 			}
 		}
 		
-		pbuf[start+2] = (byte) ((short_value6 >> 8) & 0xff);
-		pbuf[start+3] = (byte) (short_value6 & 0xff);
+		pbuf[start] = (byte) ((QType >> 8) & 0xff);
+		pbuf[start+1] = (byte) (QType & 0xff);
+		
+		int QClass = ((pbuf[start+2] & 0xff) << 8) + (pbuf[start+3] & 0xff);
+		
+		for(int j=0; j <16; j++){
+			if(j != 15){
+				QClass &= ~(1<<(15-j));
+			} else {
+				QClass |= (1<<(15-j));
+			}
+		}
+		
+		pbuf[start+2] = (byte) ((QClass >> 8) & 0xff);
+		pbuf[start+3] = (byte) (QClass & 0xff);
 		System.out.println("");
-		
-		responseSize = start + 4;
-		
-		// for example rd, recursion desired = bit 7
-		int rd = ((v >> 15-7) & 1);
-		//System.out.println("rd = " + rd);
-
-		// example of setting a bit. Let's set qr to 1
-		v |= (1<<(15-0));
-		v |= (1<<(15-5));
-		
-
-		v &= ~(1<<(15-7));
-		
-		pbuf[2] = (byte) ((v >> 8) & 0xff);
-		pbuf[3] = (byte) (v & 0xff);
 	
-		
-		for (int i=0; i < 16; i++) {
-			System.out.println("bit[" + i + "] = " + (v>>(15-i) & 1));
-			// System.out.println("bit[" + i + "] = " + (v & 1<<(15-i)));
-		}
-		
-		
-		rcode[0] = ((v >> 15-12) & 1);
-		rcode[1] = ((v >> 15-13) & 1);
-		rcode[2] = ((v >> 15-14) & 1);
-		rcode[3] = ((v >> 15-15) & 1);
-		
-		
-		rcodeVal = 0;
-		
-		for (int i = 3; i >= 0; i--){
-			if(rcode[i] == 1){
-				rcodeVal = (int) (rcodeVal + Math.pow(2, 3-i));
-			}
-		}
-		
-		System.out.println("new rcodeVal: " + rcodeVal);
-
-		System.out.println(start);
-		
+		responseSize = start + 4;
+			
 		System.out.println("The domain name you are looking for is: " + domainName);
 		
 		File f = new File("hosts.txt");
 		//String[] domains = parser.parse(f);
 		Domain[] domains  = parser.parse(f);
 		boolean domainExists = false;
-	
+		
 		for(int i = 0; i < domains.length; i++){
 			String ip = domains[i].getAddress();
 			String name = domains[i].getHost();
 
 			if(domainName.equalsIgnoreCase(name)){
 				domainExists = true;
-				System.out.println("The ip address: " + ip);
+				//set qr to 1
+				v |= (1<<(15-0));
+				//set aa to 1
+				v |= (1<<(15-5));
+				//set rd to 0
+				v &= ~(1<<(15-7));
 				
-				//set rcode to 0
+				//Set rcode to 3 for error (address not found)
 				v &= ~(1<<(15-12)); 
 				v &= ~(1<<(15-13));
-				v &= (1<<(15-14));
-				v &= (1<<(15-15));
+				v &= ~(1<<(15-14));
+				v &= ~(1<<(15-15));
 				
 				pbuf[2] = (byte) ((v >> 8) & 0xff);
 				pbuf[3] = (byte) (v & 0xff);
+				
+				int ANCount = ((pbuf[6] & 0xff) << 8) + (pbuf[7] & 0xff);
+				System.out.println("ANCount 16 bits = " + ANCount);
+				
+				for(int j=0; j <16; j++){
+					if(j != 15){
+						ANCount &= ~(1<<(15-j));
+					} else {
+						ANCount |= (1<<(15-j));
+					}
+				}
+				
+				pbuf[6] = (byte) ((ANCount >> 8) & 0xff);
+				pbuf[7] = (byte) (ANCount & 0xff);
+				
+				System.out.println("The ip address: " + ip);
+				
+				
 
 				int l = 0;
 							
@@ -435,8 +323,6 @@ public class dns_server{ static //it doesn't want me to name it dns-server
 				
 				pbuf[curr] = (byte) ((rdlength >> 8) & 0xff);
 				pbuf[curr+1] = (byte) (rdlength & 0xff);
-		
-			
 				
 				int one = Integer.parseInt(ip.substring(0, ip.indexOf(".")));
 				ip = ip.substring(ip.indexOf(".") + 1);
@@ -449,39 +335,13 @@ public class dns_server{ static //it doesn't want me to name it dns-server
 				System.out.println(one + "." + two + "." + three+ "." + four);
 				
 				curr+=2;
-				
-				int responseName = ((pbuf[curr] & 0xff) << 8) + (pbuf[curr+1] & 0xff);				
-				
-				
-				int responseName2 = ((pbuf[curr+2] & 0xff) << 8) + (pbuf[curr+3] & 0xff);				
-				
-				
-				
-				//pbuf[curr] = (byte) ((responseName >> 8) & 0xff);
-				//pbuf[curr+1] = (byte) (responseName & 0xff);
+
 				
 				pbuf[curr] = (byte) one;
 				pbuf[curr+1] = (byte) two;
 				pbuf[curr+2] = (byte) three;
 				pbuf[curr+3] = (byte) four;
 				responseSize = curr+4;
-				
-			
-				
-				//pbuf[curr+2] = (byte) ((responseName >> 8) & 0xff);
-				//pbuf[curr+3] = (byte) (responseName & 0xff);
-				
-				for (int j=0; j < 16; j++) {
-					System.out.println("bit[" + j + "] = " + (responseName>>(15-j) & 1));
-					// System.out.println("bit[" + i + "] = " + (v & 1<<(15-i)));
-				}
-				
-				for (int j=0; j < 16; j++) {
-					System.out.println("bit[" + j + "] = " + (responseName2>>(15-j) & 1));
-					// System.out.println("bit[" + i + "] = " + (v & 1<<(15-i)));
-				}
-				
-		
 				
 				
 				for (int j=0; j <= 47; j++)
@@ -496,13 +356,17 @@ public class dns_server{ static //it doesn't want me to name it dns-server
 				System.out.println("");
 				
 				break;
-				
-			} 			
-			
+			} 
 		}
-
 		
-		if(!domainExists) {
+		if(domainExists == false) {
+			//set qr to 1
+			v |= (1<<(15-0));
+			//set aa to 1
+			v |= (1<<(15-5));
+			//set rd to 0
+			v &= ~(1<<(15-7));
+			
 			//Set rcode to 3 for error (address not found)
 			v &= ~(1<<(15-12)); 
 			v &= ~(1<<(15-13));
@@ -520,20 +384,52 @@ public class dns_server{ static //it doesn't want me to name it dns-server
 		//set ANCount to 0
 			
 			int ANCount = ((pbuf[6] & 0xff) << 8) + (pbuf[7] & 0xff);
-			System.out.println("ANCount 16 bits = " + short_value2);
+			System.out.println("ANCount 16 bits = " + ANCount);
 			
 			for(int j=0; j <16; j++){
-					short_value2 &= ~(1<<(15-j));
+					ANCount &= ~(1<<(15-j));
 			}
 			
-			pbuf[6] = (byte) ((short_value2 >> 8) & 0xff);
-			pbuf[7] = (byte) (short_value2 & 0xff);
+			pbuf[6] = (byte) ((ANCount >> 8) & 0xff);
+			pbuf[7] = (byte) (ANCount & 0xff);
 			
 		}
-
-	
 		
 		return pbuf;
 		
 	}
+	
+	public static String[] ipToBinary(String ip){
+		
+		String[] ipAddr = new String[4];
+		
+		String firstByte = ip.substring(0, ip.indexOf("."));
+		ip = ip.substring(ip.indexOf(".") + 1);
+		String secondByte = ip.substring(0, ip.indexOf("."));
+		ip = ip.substring(ip.indexOf(".") + 1);
+		String thirdByte = ip.substring(0, ip.indexOf("."));
+		ip = ip.substring(ip.indexOf(".") + 1);
+		String fourthByte = ip;
+		
+		ipAddr[0] = padding(Integer.toBinaryString(Integer.parseInt(firstByte)));
+		ipAddr[1] = padding(Integer.toBinaryString(Integer.parseInt(secondByte)));
+		ipAddr[2] = padding(Integer.toBinaryString(Integer.parseInt(thirdByte)));
+		ipAddr[3] = padding(Integer.toBinaryString(Integer.parseInt(fourthByte)));
+		
+		
+		System.out.println(firstByte + "~~" + secondByte + "~~" + thirdByte + "~~" + fourthByte);
+		System.out.println(ipAddr[0] + "~~" + ipAddr[1] + "~~" + ipAddr[2] + "~~" + ipAddr[3]);
+		
+		return ipAddr;
+	}
+	
+	public static String padding(String target){
+		
+		while(target.length() != 8){
+			target = "0".concat(target);
+		}
+		
+		return target;
+	}
+	
 }
