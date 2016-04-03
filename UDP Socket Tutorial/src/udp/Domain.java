@@ -1,5 +1,7 @@
 package udp;
 
+//Group members: Mikhail Prigozhiy, Nicole Yson, Jonathan Getahun, Jonathan Caverly
+
 public class Domain {
 	
 	private String address = "";

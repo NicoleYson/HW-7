@@ -1,22 +1,14 @@
 package udp;
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.net.ConnectException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 
-//Group members: MIKHAIL PRIGOZHIY, NICOLE YSON, JON GETAHUN, JONATHAN CAVERLY
+//Group members: Mikhail Prigozhiy, Nicole Yson, Jonathan Getahun, Jonathan Caverly
 
-
-public class dns_server{ static //it doesn't want me to name it dns-server
+public class dns_server{ static
 
 	int responseSize;
 	static String hostFile;
@@ -31,7 +23,7 @@ public static void main(String[] args)throws Exception{
 	 * (2) accept hostfile with -f parameter
 	 */
 
-	int port = 0; //port numberwi
+	int port = 0; //port number
 	
 	//HostFile need to insert bw that reads from plain txt and stores input
 
@@ -55,14 +47,14 @@ public static void main(String[] args)throws Exception{
 			port = Integer.parseInt(args[3]);
 			hostFile = args[1];
 		} else {
-			System.out.println("You're stupid. Do it right.");
+			System.err.println("Error: invalid flag(s).");
 			System.exit(1);
 		}
 	}catch(NumberFormatException nfe) {
-		System.out.println("You're stupid. Do it right.");
+		System.err.println("Error: invalid port number.");
 		System.exit(1);
 	}catch (IllegalArgumentException e) {
-		System.out.println("Invalid Port Number.");
+		System.err.println("Error: invalid port number.");
 		System.exit(1);
 	} 
 
@@ -95,7 +87,7 @@ public static void main(String[] args)throws Exception{
 			System.out.println("Response sent.\n");
 		}
 	} catch (IllegalArgumentException e) {
-		System.out.println("Invalid Port Number.");
+		System.err.println("Error: invalid port number.");
 		System.exit(1);
 	} finally{
 			serverSocket.close();
@@ -200,7 +192,6 @@ static byte[] examine(byte[] pbuf, int plen) {
 	responseSize = start + 4;
 
 	File f = new File(hostFile);
-	//String[] domains = parser.parse(f);
 	Domain[] domains  = parser.parse(f);
 	boolean domainExists = false;
 
@@ -208,6 +199,11 @@ static byte[] examine(byte[] pbuf, int plen) {
 	for(int i = 0; i < domains.length; i++){
 		String ip = domains[i].getAddress();
 		String name = domains[i].getHost();
+		
+		if (ip.equals("err") && name.equals("err")) {
+			System.err.println("Error: the host file is empty or does not exist.");
+			System.exit(1);
+		}
 
 		if(domainName.equalsIgnoreCase(name)){
 			System.out.println("The queried website is \""+ name + "\" which has an ip of \"" + ip + "\"");

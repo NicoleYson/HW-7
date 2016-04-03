@@ -6,29 +6,32 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.StringTokenizer;
 
+//Group members: Mikhail Prigozhiy, Nicole Yson, Jonathan Getahun, Jonathan Caverly
+
 public class parser {
 
-	//public static String[] parse(File f) {
 	public static Domain[] parse(File f) {
-		
-		//String[] strArray = null;
+
 		Domain[] domArray = null;
-		
-		int errFlag = 0;
+
+		if (!f.exists()) {
+			domArray = new Domain[1];
+			domArray[0] = new Domain("", "");
+			domArray[0].setAddress("err");
+			domArray[0].setHost("err");
+			return domArray;
+		}
 		
 		int lineCount = 0;
 		int count = 0;
-		
+
 		try {
 
 			BufferedReader input = new BufferedReader(new FileReader(f));
 			String line;
-			
+
 			if (!input.ready()) {
 				input.close();
-				/*strArray = new String[1];
-				strArray[0] = "";
-				return strArray;*/
 				domArray = new Domain[1];
 				domArray[0] = new Domain("", "");
 				domArray[0].setAddress("err");
@@ -41,17 +44,16 @@ public class parser {
 					lineCount++;
 				}	
 			}
-			
+
 			input.close();
 
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
+
 		if (lineCount != 0)
 			domArray = new Domain[lineCount];
-			//strArray = new String[lineCount];
-		
+
 		try {
 
 			BufferedReader input = new BufferedReader(new FileReader(f));
@@ -61,58 +63,21 @@ public class parser {
 				if (line.length() > 0 && line.charAt(0) != '#') {
 					StringTokenizer st = new StringTokenizer(line);
 					String address = st.nextToken();
-					if (st.hasMoreTokens()) {
-						String host = st.nextToken();
-						if (st.hasMoreTokens()) {
-							String comment  = st.nextToken();
-							if (comment.charAt(0) != '#') {
-								System.err.println("Format error (code 1).");
-								errFlag = 1;
-								break;
-							}
-							else {
-								domArray[count] = new Domain("", "");
-								domArray[count].setAddress(address);
-								domArray[count].setHost(host);
-								//strArray[count] = address+" "+host;
-							}
-						}
-						else {
-							domArray[count] = new Domain("", "");
-							domArray[count].setAddress(address);
-							domArray[count].setHost(host);
-							//strArray[count] = address+" "+host;
-						}
-					}
-					else {
-						System.err.println("Not implemented error (code 4).");
-						errFlag = 1;
-						break;
-					}
+					String host = st.nextToken();
+					domArray[count] = new Domain("", "");
+					domArray[count].setAddress(address);
+					domArray[count].setHost(host);
 					count++;
 				}	
 			}
-			
+
 			input.close();
 
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 
-		if (errFlag == 0) {
-			return domArray;
-			//return strArray;
-		}
-		else {
-			domArray = new Domain[1];
-			domArray[0] = new Domain("", "");
-			domArray[0].setAddress("err");
-			domArray[0].setHost("err");
-			return domArray;
-			/*strArray = new String[1];
-			strArray[0] = "";
-			return strArray;*/
-		}
+		return domArray;
 
 	}
 
