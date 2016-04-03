@@ -17,6 +17,7 @@ import java.util.Arrays;
 public class dns_server{ static //it doesn't want me to name it dns-server
 
 	int responseSize;
+	static String hostFile;
 
 public static void main(String[] args)throws Exception{
 
@@ -29,33 +30,27 @@ public static void main(String[] args)throws Exception{
 	 */
 
 	int port = 0; //port numberwi
-
+	
 	//HostFile need to insert bw that reads from plain txt and stores input
 
 	try {		
 		if(args.length == 0) // error checking, can't be blank
 		{
-			port = 12345;
-			/*System.out.println("error: invalid input");
-			System.exit(1);
-			return;*/
+			port = 42069;
+			hostFile = "hosts.txt";
 		} else if( (args.length == 2) && args[0].equals("-p")) {
 			port = Integer.parseInt(args[1]);
 			System.out.println("Got PORT NUMBER = " + port);
-		} else if((args.length == 4) && args[0].equals("-p")){
+		} else if(args.length == 2 && args[0].equals("-f")){
+			port = 42069;
+			hostFile = args[0];
+		} else if((args.length == 4) && args[0].equals("-p") && args[2].equals("-f")){
 			port = Integer.parseInt(args[1]);
+			hostFile = args[3];
 			System.out.println("Got PORT NUMBER = " + port);
-			if(args[2].equals("-f") && args.length > 3)
-			{
-				// hostFile = ;							
-			}
-		} else if((args.length == 4) && args[0].equals("-f")) {
-			System.out.println("Got HOST FILE = "  ); //add variable for txt file here
-			if(args[2].equals("-p") && args.length > 3)
-			{
-				port = Integer.parseInt(args[1]);
-				// hostFile = ;							
-			}
+		} else if((args.length == 4) && args[0].equals("-f") && args[2].equals("-p")) {
+			port = Integer.parseInt(args[3]);
+			hostFile = args[1];
 		} else {
 			System.out.println("You're stupid. Do it right.");
 			System.exit(1);
@@ -211,7 +206,7 @@ static byte[] examine(byte[] pbuf, int plen) {
 
 	System.out.println("The domain name you are looking for is: " + domainName);
 
-	File f = new File("hosts.txt");
+	File f = new File(hostFile);
 	//String[] domains = parser.parse(f);
 	Domain[] domains  = parser.parse(f);
 	boolean domainExists = false;
