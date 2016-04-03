@@ -28,7 +28,7 @@ public class dns_server{ static //it doesn't want me to name it dns-server
 			 * (2) accept hostfile with -f parameter
 			 */
 		
-		int port = 0; //port number
+		int port = 0; //port numberwi
 		
 		//HostFile need to insert bw that reads from plain txt and stores input
 		
@@ -39,33 +39,26 @@ public class dns_server{ static //it doesn't want me to name it dns-server
 			/*System.out.println("error: invalid input");
 			System.exit(1);
 			return;*/
-		}
-		
-		
-		if( (args.length == 2) && args[0].equals("-p")) 
-		{
+		} else if( (args.length == 2) && args[0].equals("-p")) {
 			port = Integer.parseInt(args[1]);
 			System.out.println("Got PORT NUMBER = " + port);
-		}
-		
-		if((args.length == 4) && args[0].equals("-p")) 
-		{
+		} else if((args.length == 4) && args[0].equals("-p")){
 			port = Integer.parseInt(args[1]);
 			System.out.println("Got PORT NUMBER = " + port);
 			if(args[2].equals("-f") && args.length > 3)
 			{
 				// hostFile = ;							
 			}
-		}
-		
-		if((args.length == 4) && args[0].equals("-f")) 
-		{
+		} else if((args.length == 4) && args[0].equals("-f")) {
 			System.out.println("Got HOST FILE = "  ); //add variable for txt file here
 			if(args[2].equals("-p") && args.length > 3)
 			{
 				port = Integer.parseInt(args[1]);
 				// hostFile = ;							
 			}
+		} else {
+			System.out.println("You're stupid. Do it right.");
+			System.exit(0);
 		}
 		
 		
