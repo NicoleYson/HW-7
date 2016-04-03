@@ -63,7 +63,6 @@ public static void main(String[] args)throws Exception{
 
 	//Simple server that receives a UDP packet on a port
 	DatagramSocket serverSocket = new DatagramSocket(port);
-	System.out.println(serverSocket.getPort());
 	String Website;
 
 	byte[] recieveData = new byte[1024]; 
@@ -73,7 +72,6 @@ public static void main(String[] args)throws Exception{
 		System.out.println("Waiting for packet.");
 		serverSocket.receive(recievePacket);
 		sendData = examine(recievePacket.getData(), recievePacket.getLength());
-		System.out.println(recievePacket.getData().length);
 		System.out.println("Packet received.");
 		String sentence = new String(Arrays.copyOfRange(recieveData, 13, 24), StandardCharsets.UTF_8);
 		//System.out.println("Recieved: " + sentence); 
@@ -106,17 +104,7 @@ static byte[] examine(byte[] pbuf, int plen) {
 	// dump what we have for debugging
 	// a line of hex first, then a line of characters (where possible)
 
-	System.out.println("Received: " + plen + " bytes: ");
-	for (int i=0; i < plen; i++)
-		System.out.print(String.format("%02x ", pbuf[i]));
-	System.out.println("");
-	for (int i=0; i < plen; i++)
-		if ((pbuf[i] <= ' ') || (pbuf[i] > '~'))
-			System.out.print(String.format("%02x ", pbuf[i]));
-		else
-			System.out.print(String.format("%c  ", pbuf[i]));
-	System.out.println("");
-
+	
 	// look at the bytes as big endian shorts
 	// the wrap() method uses an existing byte array for the buffer
 
@@ -124,17 +112,11 @@ static byte[] examine(byte[] pbuf, int plen) {
 	ByteBuffer.wrap(pbuf).order(ByteOrder.BIG_ENDIAN).asShortBuffer().get(shorts);
 
 	// dump our buffer as shorts
-	for (int i=0; i < plen/2; i++)
-		System.out.println("short[" + i + "] = " + shorts[i]);
-
 	// another way we can create shorts is by manually putting 2 bytes together
 	// internet format is big endian - the first byte has the more significant value
 	// this one produces an unsigned result
 
 	int short_value = ((pbuf[0] & 0xff) << 8) + (pbuf[1] & 0xff);
-	System.out.println("first 16 bits = " + short_value);
-
-	System.out.println();
 	// demo of extracting bit fields (e.g., for dns)
 	// grab the second group of two bytes and treat it as a 16 bit set of bits
 	// bits are indexed left to right
@@ -146,7 +128,7 @@ static byte[] examine(byte[] pbuf, int plen) {
 	int end;
 
 
-	System.out.print(String.format("%d ", pbuf[13]));
+//	System.out.print(String.format("%d ", pbuf[13]));
 	int check = 0;
 	String domainName = "";
 
@@ -154,14 +136,14 @@ static byte[] examine(byte[] pbuf, int plen) {
 
 		if(check == 1){
 			domainName = domainName.concat(".");
-			System.out.print(".");
+	//		System.out.print(".");
 		} else {
 			check = 1;
 		}
 
 		for (int i = 0; i < size; i++){
 			domainName = domainName.concat(String.format("%c", pbuf[start]));
-			System.out.print(String.format("%c", pbuf[start]));
+		//	System.out.print(String.format("%c", pbuf[start]));
 			start++;
 		}
 
@@ -170,7 +152,7 @@ static byte[] examine(byte[] pbuf, int plen) {
 		end = start++;
 
 	} while(!((pbuf[start] <= ' ') || (pbuf[start] > '~'))); //do a comparison to 0? maybe later.
-	System.out.println();
+	//System.out.println();
 
 	//Question Type
 
@@ -200,12 +182,11 @@ static byte[] examine(byte[] pbuf, int plen) {
 
 	pbuf[start+2] = (byte) ((QClass >> 8) & 0xff);
 	pbuf[start+3] = (byte) (QClass & 0xff);
-	System.out.println("");
+	
 
 	responseSize = start + 4;
 
-	System.out.println("The domain name you are looking for is: " + domainName);
-
+	
 	File f = new File(hostFile);
 	//String[] domains = parser.parse(f);
 	Domain[] domains  = parser.parse(f);
@@ -238,7 +219,6 @@ static byte[] examine(byte[] pbuf, int plen) {
 			pbuf[3] = (byte) (v & 0xff);
 
 			int ANCount = ((pbuf[6] & 0xff) << 8) + (pbuf[7] & 0xff);
-			System.out.println("ANCount 16 bits = " + ANCount);
 
 			for(int j=0; j <16; j++){
 				if(j != 15){
@@ -250,10 +230,6 @@ static byte[] examine(byte[] pbuf, int plen) {
 
 			pbuf[6] = (byte) ((ANCount >> 8) & 0xff);
 			pbuf[7] = (byte) (ANCount & 0xff);
-
-			System.out.println("The ip address: " + ip);
-
-
 
 			int l = 0;
 
@@ -328,8 +304,6 @@ static byte[] examine(byte[] pbuf, int plen) {
 			ip = ip.substring(ip.indexOf(".") + 1);
 			int four = Integer.parseInt(ip);
 
-			System.out.println(one + "." + two + "." + three+ "." + four);
-
 			curr+=2;
 
 
@@ -338,18 +312,6 @@ static byte[] examine(byte[] pbuf, int plen) {
 			pbuf[curr+2] = (byte) three;
 			pbuf[curr+3] = (byte) four;
 			responseSize = curr+4;
-
-
-			for (int j=0; j <= 47; j++)
-				System.out.print(String.format("%02x ", pbuf[j]));
-			System.out.println("");
-
-			for (int j=0; j <= 47; j++)
-				if ((pbuf[j] <= ' ') || (pbuf[j] > '~')){
-					System.out.print(String.format("%02x ", pbuf[j]));}
-				else{
-					System.out.print(String.format("%c  ", pbuf[j]));}
-			System.out.println("");
 
 			break;
 		} 
@@ -374,11 +336,6 @@ static byte[] examine(byte[] pbuf, int plen) {
 		v |= (1<<(15-14));
 		v |= (1<<(15-15));
 
-		for (int x=0; x < 16; x++) {
-			System.out.println("bit[" + x + "] = " + (v>>(15-x) & 1));
-			// System.out.println("bit[" + i + "] = " + (v & 1<<(15-i)));
-		}
-
 		pbuf[2] = (byte) ((v >> 8) & 0xff);
 		pbuf[3] = (byte) (v & 0xff);
 
@@ -386,7 +343,6 @@ static byte[] examine(byte[] pbuf, int plen) {
 
 		
 		int ANCount = ((pbuf[6] & 0xff) << 8) + (pbuf[7] & 0xff);
-		System.out.println("ANCount 16 bits = " + ANCount);
 
 		for(int j=0; j <16; j++){
 			ANCount &= ~(1<<(15-j));
