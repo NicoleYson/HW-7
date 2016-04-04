@@ -309,7 +309,7 @@ public class dns_server{
 
 			if(domainExists == false) {
 
-				System.out.println("The queried website\""+ domainName + "\"  does not exist.");
+				System.out.println("The queried website \"" + domainName + "\" does not exist.");
 				//set qr to 1
 				v |= (1<<(15-0));
 				//set aa to 1
@@ -341,7 +341,7 @@ public class dns_server{
 				pbuf[7] = (byte) (ANCount & 0xff);
 
 			} } else {
-				System.out.println("The queried website\""+ domainName + "\"  does not exist.");
+				System.out.println("The queried website \"" + domainName + "\" does not exist.");
 				//set qr to 1
 				v |= (1<<(15-0));
 				//set aa to 1
